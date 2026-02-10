@@ -1,0 +1,10 @@
+/slackcli
+bin/
+dist/
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+.env
