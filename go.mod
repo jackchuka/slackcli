@@ -5,7 +5,7 @@ go 1.25.7
 tool go.uber.org/mock/mockgen
 
 require (
-	github.com/mark3labs/mcp-go v0.43.2
+	github.com/mark3labs/mcp-go v0.44.0
 	github.com/olekukonko/tablewriter v1.1.3
 	github.com/slack-go/slack v0.17.3
 	github.com/spf13/cobra v1.10.2
