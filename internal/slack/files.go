@@ -120,7 +120,7 @@ func (c *Client) GetFileInfo(fileID string) (*File, error) {
 }
 
 func (c *Client) UploadFile(channelID, filename, title string, reader io.Reader) (*File, error) {
-	params := slackapi.UploadFileV2Parameters{
+	params := slackapi.UploadFileParameters{
 		Channel:  channelID,
 		Filename: filename,
 		Title:    title,
@@ -128,7 +128,7 @@ func (c *Client) UploadFile(channelID, filename, title string, reader io.Reader)
 	}
 
 	f, err := retry(func() (*slackapi.FileSummary, error) {
-		return c.api.UploadFileV2(params)
+		return c.api.UploadFile(params)
 	})
 	if err != nil {
 		return nil, classifyError(err)
