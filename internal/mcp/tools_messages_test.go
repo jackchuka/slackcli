@@ -68,6 +68,34 @@ func TestMakeSendMessage(t *testing.T) {
 		require.NoError(t, err)
 		assert.False(t, result.IsError)
 	})
+
+	t.Run("reply_broadcast", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		mock := mocks.NewMockService(ctrl)
+
+		mock.EXPECT().SendMessage(slack.SendMessageParams{
+			ChannelID:      "C123",
+			Text:           "hello",
+			ThreadTS:       "1111.2222",
+			ReplyBroadcast: true,
+		}).Return(&slack.Message{
+			Channel:   "C123",
+			Text:      "hello",
+			Timestamp: "1234.5678",
+			ThreadTS:  "1111.2222",
+		}, nil)
+
+		handler := makeSendMessage(mock)
+		result, err := handler(context.Background(), newRequest(map[string]any{
+			"channel_id":      "C123",
+			"text":            "hello",
+			"thread_ts":       "1111.2222",
+			"reply_broadcast": true,
+		}))
+
+		require.NoError(t, err)
+		assert.False(t, result.IsError)
+	})
 }
 
 func TestMakeEditMessage(t *testing.T) {

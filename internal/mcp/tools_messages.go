@@ -27,6 +27,7 @@ func registerMessageTools(s *server.MCPServer, client slack.Service, readOnly bo
 		mcp.WithString("channel_id", mcp.Required(), mcp.Description("Channel ID")),
 		mcp.WithString("text", mcp.Required(), mcp.Description("Message text")),
 		mcp.WithString("thread_ts", mcp.Description("Thread timestamp for replies")),
+		mcp.WithBoolean("reply_broadcast", mcp.Description("When replying in a thread, also post the message to the channel")),
 	), makeSendMessage(client))
 
 	s.AddTool(mcp.NewTool("edit_message",
@@ -75,11 +76,13 @@ func makeSendMessage(client slack.Service) server.ToolHandlerFunc {
 			return errResult(err), nil
 		}
 		threadTS := request.GetString("thread_ts", "")
+		replyBroadcast := request.GetBool("reply_broadcast", false)
 
 		msg, err := client.SendMessage(slack.SendMessageParams{
-			ChannelID: channelID,
-			Text:      text,
-			ThreadTS:  threadTS,
+			ChannelID:      channelID,
+			Text:           text,
+			ThreadTS:       threadTS,
+			ReplyBroadcast: replyBroadcast,
 		})
 		if err != nil {
 			return errResult(err), nil

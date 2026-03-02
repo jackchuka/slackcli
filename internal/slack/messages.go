@@ -106,9 +106,10 @@ func (c *Client) listAllMessages(params ListMessagesParams) (*PaginatedResult[Me
 }
 
 type SendMessageParams struct {
-	ChannelID string
-	Text      string
-	ThreadTS  string
+	ChannelID      string
+	Text           string
+	ThreadTS       string
+	ReplyBroadcast bool
 }
 
 func (c *Client) SendMessage(params SendMessageParams) (*Message, error) {
@@ -117,6 +118,9 @@ func (c *Client) SendMessage(params SendMessageParams) (*Message, error) {
 	}
 	if params.ThreadTS != "" {
 		opts = append(opts, slackapi.MsgOptionTS(params.ThreadTS))
+		if params.ReplyBroadcast {
+			opts = append(opts, slackapi.MsgOptionBroadcast())
+		}
 	}
 
 	type result struct {
