@@ -14,6 +14,7 @@ type Message struct {
 	ThreadTS  string `json:"thread_ts,omitempty"`
 	Channel   string `json:"channel,omitempty"`
 	Type      string `json:"type"`
+	Permalink string `json:"permalink,omitempty"`
 }
 
 func messageFromAPI(msg slackapi.Message) Message {
@@ -215,6 +216,7 @@ func (c *Client) SearchMessages(params SearchParams) (*SearchResult, error) {
 			Text:      m.Text,
 			Channel:   m.Channel.ID,
 			Type:      "message",
+			Permalink: m.Permalink,
 		}
 	}
 	return &SearchResult{
