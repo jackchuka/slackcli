@@ -49,25 +49,25 @@ func (c *Client) ListReactions(userID string, params PaginationParams) (*Paginat
 	if params.All {
 		return c.listAllReactions(userID, params)
 	}
-	return c.listReactionsPage(userID, params, 1)
+	return c.listReactionsPage(userID, params, "")
 }
 
-func (c *Client) listReactionsPage(userID string, params PaginationParams, page int) (*PaginatedResult[ReactedItem], error) {
+func (c *Client) listReactionsPage(userID string, params PaginationParams, cursor string) (*PaginatedResult[ReactedItem], error) {
 	listParams := slackapi.ListReactionsParameters{
-		User:  userID,
-		Count: params.EffectiveLimit(),
-		Page:  page,
-		Full:  true,
+		User:   userID,
+		Limit:  params.EffectiveLimit(),
+		Cursor: cursor,
+		Full:   true,
 	}
 
 	type listResult struct {
-		items  []slackapi.ReactedItem
-		paging *slackapi.Paging
+		items      []slackapi.ReactedItem
+		nextCursor string
 	}
 
 	r, err := retry(func() (listResult, error) {
-		items, paging, err := c.api.ListReactions(listParams)
-		return listResult{items, paging}, err
+		items, nextCursor, err := c.api.ListReactions(listParams)
+		return listResult{items, nextCursor}, err
 	})
 	if err != nil {
 		return nil, classifyError(err)
@@ -76,16 +76,17 @@ func (c *Client) listReactionsPage(userID string, params PaginationParams, page 
 	result := convertReactedItems(r.items)
 
 	return &PaginatedResult[ReactedItem]{
-		Items:   result,
-		HasMore: r.paging != nil && page < r.paging.Pages,
+		Items:      result,
+		NextCursor: r.nextCursor,
+		HasMore:    r.nextCursor != "",
 	}, nil
 }
 
 func (c *Client) listAllReactions(userID string, params PaginationParams) (*PaginatedResult[ReactedItem], error) {
 	var allItems []ReactedItem
-	page := 1
+	cursor := ""
 	for {
-		result, err := c.listReactionsPage(userID, params, page)
+		result, err := c.listReactionsPage(userID, params, cursor)
 		if err != nil {
 			return nil, err
 		}
@@ -93,7 +94,7 @@ func (c *Client) listAllReactions(userID string, params PaginationParams) (*Pagi
 		if !result.HasMore {
 			break
 		}
-		page++
+		cursor = result.NextCursor
 	}
 	return &PaginatedResult[ReactedItem]{
 		Items:   allItems,
