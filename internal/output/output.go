@@ -93,7 +93,7 @@ func (f *TableFormatter) formatMapStringAny(m map[string]any) error {
 
 func (f *TableFormatter) formatReflect(data any) error {
 	rv := reflect.ValueOf(data)
-	if rv.Kind() == reflect.Ptr {
+	if rv.Kind() == reflect.Pointer {
 		if rv.IsNil() {
 			return nil
 		}
@@ -166,7 +166,7 @@ func (f *TableFormatter) formatSlice(rv reflect.Value) error {
 	}
 
 	elemType := rv.Type().Elem()
-	if elemType.Kind() == reflect.Ptr {
+	if elemType.Kind() == reflect.Pointer {
 		elemType = elemType.Elem()
 	}
 	if elemType.Kind() != reflect.Struct {
@@ -178,7 +178,7 @@ func (f *TableFormatter) formatSlice(rv reflect.Value) error {
 
 	for i := 0; i < rv.Len(); i++ {
 		elem := rv.Index(i)
-		if elem.Kind() == reflect.Ptr {
+		if elem.Kind() == reflect.Pointer {
 			elem = elem.Elem()
 		}
 		_ = table.Append(structValues(elem, elemType))
