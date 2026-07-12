@@ -1,6 +1,6 @@
 module github.com/jackchuka/slackcli
 
-go 1.26.1
+go 1.26.5
 
 tool go.uber.org/mock/mockgen
 
