@@ -1,8 +1,8 @@
 # slackcli
 
-[![Test](https://github.com/jackchuka/slackcli/workflows/Test/badge.svg)](https://github.com/jackchuka/slackcli/actions)
-[![Go Report Card](https://goreportcard.com/badge/github.com/jackchuka/slackcli)](https://goreportcard.com/report/github.com/jackchuka/slackcli)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Test](https://github.com/jackchuka/slackcli/actions/workflows/test.yml/badge.svg)](https://github.com/jackchuka/slackcli/actions/workflows/test.yml)
+[![Release](https://img.shields.io/github/v/release/jackchuka/slackcli?sort=semver)](https://github.com/jackchuka/slackcli/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 **For AI, by AI.** The Slack CLI and MCP server built from the ground up for LLM-powered agents and programmatic access.
 
