@@ -89,3 +89,13 @@ func TestRetry(t *testing.T) {
 		assert.Equal(t, 99, result.Value)
 	})
 }
+
+func TestRetry_ExhaustedIsClassifiedAsRateLimited(t *testing.T) {
+	_, err := retry(func() (string, error) {
+		return "", &slackapi.RateLimitedError{RetryAfter: time.Millisecond}
+	})
+	se := classifyError(err)
+	require.NotNil(t, se)
+	assert.Equal(t, ErrRateLimit, se.Code)
+	assert.ErrorIs(t, se, err)
+}

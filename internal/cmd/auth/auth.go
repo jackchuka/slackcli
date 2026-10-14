@@ -2,6 +2,8 @@ package auth
 
 import (
 	"fmt"
+	"maps"
+	"slices"
 
 	"github.com/spf13/cobra"
 
@@ -77,7 +79,7 @@ func newLogoutCmd() *cobra.Command {
 		Args:  cobra.MaximumNArgs(1),
 		RunE: func(c *cobra.Command, args []string) error {
 			rc := cmdutil.GetRunContext(c.Context())
-			name := rc.Config.ActiveWorkspace
+			name := rc.Workspace
 			if len(args) > 0 {
 				name = args[0]
 			}
@@ -118,7 +120,7 @@ func newStatusCmd() *cobra.Command {
 			}
 			return rc.Formatter.Format(map[string]any{
 				"status":    "authenticated",
-				"workspace": rc.Config.ActiveWorkspace,
+				"workspace": rc.Workspace,
 				"team":      result.Team,
 				"user":      result.User,
 				"team_id":   result.TeamID,
@@ -138,8 +140,9 @@ func newListCmd() *cobra.Command {
 				TeamID string `json:"team_id"`
 				Active bool   `json:"active"`
 			}
-			var workspaces []workspace
-			for name, ws := range rc.Config.Workspaces {
+			workspaces := []workspace{}
+			for _, name := range slices.Sorted(maps.Keys(rc.Config.Workspaces)) {
+				ws := rc.Config.Workspaces[name]
 				workspaces = append(workspaces, workspace{
 					Name:   name,
 					TeamID: ws.TeamID,

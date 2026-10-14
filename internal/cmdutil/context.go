@@ -19,6 +19,7 @@ type RunContext struct {
 	Formatter output.Formatter
 	Writers   *output.Writers
 	Resolver  *auth.Resolver
+	Workspace string
 	ReadOnly  bool
 }
 

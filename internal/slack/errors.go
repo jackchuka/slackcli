@@ -1,6 +1,11 @@
 package slack
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+
+	slackapi "github.com/slack-go/slack"
+)
 
 type ErrorCode string
 
@@ -37,6 +42,10 @@ func classifyError(err error) *SlackError {
 		return nil
 	}
 	msg := err.Error()
+	var rateLimited *slackapi.RateLimitedError
+	if errors.As(err, &rateLimited) {
+		return &SlackError{Code: ErrRateLimit, Message: msg, Err: err}
+	}
 	switch msg {
 	case "invalid_auth", "not_authed", "token_revoked", "token_expired", "account_inactive":
 		return &SlackError{Code: ErrAuth, Message: msg, Err: err}
