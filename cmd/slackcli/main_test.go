@@ -53,3 +53,8 @@ func TestExitCode(t *testing.T) {
 		})
 	}
 }
+
+func TestExitCode_RateLimited(t *testing.T) {
+	err := fmt.Errorf("wrap: %w", &slack.SlackError{Code: slack.ErrRateLimit, Message: "rate limited"})
+	assert.Equal(t, 4, exitCode(err))
+}

@@ -24,6 +24,8 @@ func exitCode(err error) int {
 			return 2
 		case slack.ErrNotFound:
 			return 3
+		case slack.ErrRateLimit:
+			return 4
 		}
 	}
 	return 1

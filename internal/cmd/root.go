@@ -58,7 +58,7 @@ func NewRootCmd() *cobra.Command {
 	}
 
 	rootCmd.PersistentFlags().StringVar(&flagToken, "token", "", "Slack API token")
-	rootCmd.PersistentFlags().StringVarP(&flagWorkspace, "workspace", "w", "", "Workspace name")
+	rootCmd.PersistentFlags().StringVarP(&flagWorkspace, "workspace", "w", "", "Configured workspace to use instead of the active one")
 	rootCmd.PersistentFlags().StringVarP(&flagOutput, "output", "o", "", "Output format (json|table)")
 	rootCmd.PersistentFlags().BoolVar(&flagReadOnly, "read-only", false, "Restrict to read-only operations (reject writes)")
 
@@ -96,13 +96,26 @@ func initContext(cmd *cobra.Command, needsClient bool) error {
 		}
 	}
 
-	resolver := auth.NewResolver(flagToken, cfg.ActiveToken)
+	workspace := cfg.ActiveWorkspace
+	token := flagToken
+	if flagWorkspace != "" {
+		ws, ok := cfg.Workspaces[flagWorkspace]
+		if !ok {
+			return fmt.Errorf("workspace %q not found", flagWorkspace)
+		}
+		workspace = flagWorkspace
+		if token == "" {
+			token = ws.Token
+		}
+	}
+	resolver := auth.NewResolver(token, cfg.ActiveToken)
 
 	rc := &cmdutil.RunContext{
 		Config:    cfg,
 		Formatter: formatter,
 		Writers:   writers,
 		Resolver:  resolver,
+		Workspace: workspace,
 		ReadOnly:  flagReadOnly,
 	}
 

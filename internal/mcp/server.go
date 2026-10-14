@@ -5,12 +5,13 @@ import (
 	"github.com/mark3labs/mcp-go/server"
 
 	"github.com/jackchuka/slackcli/internal/slack"
+	"github.com/jackchuka/slackcli/internal/version"
 )
 
 func NewServer(client slack.Service, readOnly bool) *server.MCPServer {
 	s := server.NewMCPServer(
 		"slackcli",
-		"1.0.0",
+		version.Version,
 		server.WithToolCapabilities(true),
 		server.WithRecovery(),
 	)
