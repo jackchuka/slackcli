@@ -12,6 +12,7 @@ import (
 func registerFileTools(s *server.MCPServer, client slack.Service, readOnly bool) {
 	s.AddTool(mcp.NewTool("list_files",
 		mcp.WithDescription("List files in Slack"),
+		readOnlyHint(),
 		mcp.WithString("channel_id", mcp.Description("Filter by channel ID")),
 		mcp.WithString("user_id", mcp.Description("Filter by user ID")),
 		mcp.WithNumber("limit", mcp.Description("Max files to return"), mcp.DefaultNumber(100)),
@@ -19,6 +20,7 @@ func registerFileTools(s *server.MCPServer, client slack.Service, readOnly bool)
 
 	s.AddTool(mcp.NewTool("get_file_info",
 		mcp.WithDescription("Get information about a file"),
+		readOnlyHint(),
 		mcp.WithString("file_id", mcp.Required(), mcp.Description("File ID")),
 	), makeGetFileInfo(client))
 

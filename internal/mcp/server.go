@@ -30,3 +30,15 @@ func NewServer(client slack.Service, readOnly bool) *server.MCPServer {
 func errResult(err error) *mcp.CallToolResult {
 	return mcp.NewToolResultError(err.Error())
 }
+
+func readOnlyHint() mcp.ToolOption {
+	return func(t *mcp.Tool) {
+		mcp.WithReadOnlyHintAnnotation(true)(t)
+		mcp.WithDestructiveHintAnnotation(false)(t)
+	}
+}
+
+// additiveHint marks a tool that writes without overwriting or removing anything.
+func additiveHint() mcp.ToolOption {
+	return mcp.WithDestructiveHintAnnotation(false)
+}

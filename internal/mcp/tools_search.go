@@ -12,6 +12,7 @@ import (
 func registerSearchTools(s *server.MCPServer, client slack.Service) {
 	s.AddTool(mcp.NewTool("search_messages",
 		mcp.WithDescription("Search for messages in Slack"),
+		readOnlyHint(),
 		mcp.WithString("query", mcp.Required(), mcp.Description("Search query")),
 		mcp.WithString("sort", mcp.Description("Sort field: timestamp or score"), mcp.DefaultString("timestamp")),
 		mcp.WithString("sort_dir", mcp.Description("Sort direction: asc or desc"), mcp.DefaultString("desc")),

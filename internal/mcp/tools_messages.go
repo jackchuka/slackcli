@@ -12,6 +12,7 @@ import (
 func registerMessageTools(s *server.MCPServer, client slack.Service, readOnly bool) {
 	s.AddTool(mcp.NewTool("list_messages",
 		mcp.WithDescription("List messages in a Slack channel"),
+		readOnlyHint(),
 		mcp.WithString("channel_id", mcp.Required(), mcp.Description("Channel ID")),
 		mcp.WithNumber("limit", mcp.Description("Max messages to return"), mcp.DefaultNumber(100)),
 		mcp.WithBoolean("all", mcp.Description("Fetch all messages")),
@@ -24,6 +25,7 @@ func registerMessageTools(s *server.MCPServer, client slack.Service, readOnly bo
 
 	s.AddTool(mcp.NewTool("send_message",
 		mcp.WithDescription("Send a message to a Slack channel"),
+		additiveHint(),
 		mcp.WithString("channel_id", mcp.Required(), mcp.Description("Channel ID")),
 		mcp.WithString("text", mcp.Required(), mcp.Description("Message text")),
 		mcp.WithString("thread_ts", mcp.Description("Thread timestamp for replies")),

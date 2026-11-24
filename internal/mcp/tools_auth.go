@@ -12,6 +12,7 @@ import (
 func registerAuthTools(s *server.MCPServer, client slack.Service) {
 	s.AddTool(mcp.NewTool("auth_test",
 		mcp.WithDescription("Test authentication and get current user info"),
+		readOnlyHint(),
 	), makeAuthTest(client))
 }
 

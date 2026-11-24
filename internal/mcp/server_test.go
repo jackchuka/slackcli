@@ -78,3 +78,61 @@ func TestNewServer_ReportsBuildVersion(t *testing.T) {
 	assert.Equal(t, "slackcli", got.Result.ServerInfo.Name)
 	assert.Equal(t, "9.8.7", got.Result.ServerInfo.Version)
 }
+
+func TestNewServer_ToolAnnotations(t *testing.T) {
+	type hints struct{ readOnly, destructive bool }
+	readOnly := hints{readOnly: true, destructive: false}
+	additive := hints{readOnly: false, destructive: false}
+	destructive := hints{readOnly: false, destructive: true}
+	want := map[string]hints{
+		"list_channels":       readOnly,
+		"get_channel_info":    readOnly,
+		"list_messages":       readOnly,
+		"list_users":          readOnly,
+		"get_user_info":       readOnly,
+		"get_user_presence":   readOnly,
+		"list_reactions":      readOnly,
+		"list_files":          readOnly,
+		"get_file_info":       readOnly,
+		"search_messages":     readOnly,
+		"auth_test":           readOnly,
+		"create_channel":      additive,
+		"invite_to_channel":   additive,
+		"send_message":        additive,
+		"add_reaction":        additive,
+		"archive_channel":     destructive,
+		"kick_from_channel":   destructive,
+		"set_channel_topic":   destructive,
+		"set_channel_purpose": destructive,
+		"edit_message":        destructive,
+		"delete_message":      destructive,
+		"remove_reaction":     destructive,
+		"delete_file":         destructive,
+	}
+
+	ctrl := gomock.NewController(t)
+	tools := NewServer(mocks.NewMockService(ctrl), false).ListTools()
+	require.Len(t, tools, len(want))
+	for name, h := range want {
+		tool, ok := tools[name]
+		require.True(t, ok, name)
+		a := tool.Tool.Annotations
+		require.NotNil(t, a.ReadOnlyHint, name)
+		require.NotNil(t, a.DestructiveHint, name)
+		assert.Equal(t, h.readOnly, *a.ReadOnlyHint, name)
+		assert.Equal(t, h.destructive, *a.DestructiveHint, name)
+	}
+
+	for name, tool := range NewServer(mocks.NewMockService(ctrl), true).ListTools() {
+		assert.True(t, *tool.Tool.Annotations.ReadOnlyHint, name)
+	}
+}
+
+func TestInviteToChannel_UserIDsItemSchema(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	tool := NewServer(mocks.NewMockService(ctrl), false).GetTool("invite_to_channel")
+	require.NotNil(t, tool)
+	prop, ok := tool.Tool.InputSchema.Properties["user_ids"].(map[string]any)
+	require.True(t, ok)
+	assert.Equal(t, map[string]any{"type": "string"}, prop["items"])
+}
