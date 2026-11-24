@@ -12,17 +12,20 @@ import (
 func registerUserTools(s *server.MCPServer, client slack.Service) {
 	s.AddTool(mcp.NewTool("list_users",
 		mcp.WithDescription("List Slack users"),
+		readOnlyHint(),
 		mcp.WithNumber("limit", mcp.Description("Max users to return"), mcp.DefaultNumber(100)),
 		mcp.WithBoolean("all", mcp.Description("Fetch all users")),
 	), makeListUsers(client))
 
 	s.AddTool(mcp.NewTool("get_user_info",
 		mcp.WithDescription("Get information about a Slack user"),
+		readOnlyHint(),
 		mcp.WithString("user_id", mcp.Required(), mcp.Description("User ID")),
 	), makeGetUserInfo(client))
 
 	s.AddTool(mcp.NewTool("get_user_presence",
 		mcp.WithDescription("Get a user's presence status"),
+		readOnlyHint(),
 		mcp.WithString("user_id", mcp.Required(), mcp.Description("User ID")),
 	), makeGetUserPresence(client))
 }

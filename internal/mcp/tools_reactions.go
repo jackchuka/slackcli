@@ -12,6 +12,7 @@ import (
 func registerReactionTools(s *server.MCPServer, client slack.Service, readOnly bool) {
 	s.AddTool(mcp.NewTool("list_reactions",
 		mcp.WithDescription("List reactions for a user"),
+		readOnlyHint(),
 		mcp.WithString("user_id", mcp.Description("User ID (defaults to authenticated user)")),
 		mcp.WithNumber("limit", mcp.Description("Max items to return"), mcp.DefaultNumber(100)),
 	), makeListReactions(client))
@@ -22,6 +23,7 @@ func registerReactionTools(s *server.MCPServer, client slack.Service, readOnly b
 
 	s.AddTool(mcp.NewTool("add_reaction",
 		mcp.WithDescription("Add an emoji reaction to a message"),
+		additiveHint(),
 		mcp.WithString("channel_id", mcp.Required(), mcp.Description("Channel ID")),
 		mcp.WithString("timestamp", mcp.Required(), mcp.Description("Message timestamp")),
 		mcp.WithString("name", mcp.Required(), mcp.Description("Emoji name (without colons)")),

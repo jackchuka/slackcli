@@ -13,6 +13,7 @@ import (
 func registerChannelTools(s *server.MCPServer, client slack.Service, readOnly bool) {
 	s.AddTool(mcp.NewTool("list_channels",
 		mcp.WithDescription("List Slack channels"),
+		readOnlyHint(),
 		mcp.WithNumber("limit", mcp.Description("Max channels to return"), mcp.DefaultNumber(100)),
 		mcp.WithBoolean("all", mcp.Description("Fetch all channels (auto-paginate)")),
 		mcp.WithString("cursor", mcp.Description("Pagination cursor")),
@@ -20,6 +21,7 @@ func registerChannelTools(s *server.MCPServer, client slack.Service, readOnly bo
 
 	s.AddTool(mcp.NewTool("get_channel_info",
 		mcp.WithDescription("Get information about a Slack channel"),
+		readOnlyHint(),
 		mcp.WithString("channel_id", mcp.Required(), mcp.Description("Channel ID")),
 	), makeGetChannelInfo(client))
 
@@ -29,6 +31,7 @@ func registerChannelTools(s *server.MCPServer, client slack.Service, readOnly bo
 
 	s.AddTool(mcp.NewTool("create_channel",
 		mcp.WithDescription("Create a new Slack channel"),
+		additiveHint(),
 		mcp.WithString("name", mcp.Required(), mcp.Description("Channel name")),
 		mcp.WithBoolean("is_private", mcp.Description("Create as private channel")),
 	), makeCreateChannel(client))
@@ -40,8 +43,9 @@ func registerChannelTools(s *server.MCPServer, client slack.Service, readOnly bo
 
 	s.AddTool(mcp.NewTool("invite_to_channel",
 		mcp.WithDescription("Invite users to a channel"),
+		additiveHint(),
 		mcp.WithString("channel_id", mcp.Required(), mcp.Description("Channel ID")),
-		mcp.WithArray("user_ids", mcp.Required(), mcp.Description("User IDs to invite")),
+		mcp.WithArray("user_ids", mcp.Required(), mcp.Description("User IDs to invite"), mcp.WithStringItems()),
 	), makeInviteToChannel(client))
 
 	s.AddTool(mcp.NewTool("kick_from_channel",
